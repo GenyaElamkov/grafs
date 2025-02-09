@@ -130,3 +130,7 @@ dmypy.json
 .vscode/settings.json
 .pylintrc
 .vscode/launch.json
+
+
+.csv
+.html
