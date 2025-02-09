@@ -9,7 +9,8 @@ class Window(ttk.Frame):
     def __init__(self, master=None):
         super().__init__()
         self.help_label = ttk.Label(
-            text="1. Нажмите на кнопку «Выбрать файл» и найдите ваш Excel файл.\n2. Прежде чем запускать обработку, убедитесь, что в файле нет пустых строк в верхней части.\n3. Когда все готово, нажмите кнопку «Запустить».")
+            text="1. Нажмите на кнопку «Выбрать файл» и найдите ваш Excel файл.\n2. Прежде чем запускать обработку, убедитесь, что в файле нет пустых строк в верхней части.\n3. Когда все готово, нажмите кнопку «Запустить».\n\nPS: Также, не забудьте проверить и при необходимости изменить файл настроек settings.ini.\nВ этом файле указаны поля Excel файла, которые обрабатываются, поэтому убедитесь,\nчто все настроено правильно."
+        )
         self.text_label = ttk.Label(text="Выберите файл")
 
         self.filepath = ""
@@ -42,16 +43,16 @@ def main() -> None:
     root = tk.Tk()
     root.title("Grafs")
     # root.geometry("600x200")
-    
+
     w = root.winfo_screenwidth()
     h = root.winfo_screenheight()
     w = w // 2  # середина экрана
     h = h // 2
     w = w - 200  # смещение от середины
     h = h - 200
-    root.geometry(f'600x200+{w}+{h}')
-    root.resizable(width=False, height=False) 
-    
+    root.geometry(f"600x200+{w}+{h}")
+    root.resizable(width=False, height=False)
+
     root.grid_rowconfigure(index=0, weight=1)
     root.grid_columnconfigure(index=0, weight=1)
     root.grid_columnconfigure(index=1, weight=1)
