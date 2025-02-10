@@ -5,9 +5,10 @@ from pyvis.network import Network
 def building_graphics(
     data: list[dict], object_csv: namedtuple, filename_out_html: str
 ) -> None:
-    nt = Network(directed=True, height=1000, filter_menu=True)
+    height=1000
+    nt = Network(directed=True, height=height, filter_menu=True)
     # filter_menu - верхнее меню для фильров
-
+    coordinate_y = height
     counter = 0
     for row in data:
         try:
@@ -23,7 +24,9 @@ def building_graphics(
         id_key = row[object_csv.analiz_object]
         nt.add_node(id_key, label=id_key, group=1, font={"size": 30}, size=50)
 
+        # Добавляем ноды — входящие суммы.
         description = f"ИНН: {row[object_csv.inn]}\nКонтрагент: {row[object_csv.agent]}"
+        coordinate_y -= height/len(data)
         if sum_admission != 0:
             counter += 1
             nt.add_node(
@@ -31,9 +34,13 @@ def building_graphics(
                 label=f"Сумма: {sum_admission}\n{description}",
                 group=2,
                 size=10,
+                x=500,
+                y=coordinate_y,
+                physics=False,
             )
             nt.add_edge(counter, id_key)
 
+        # Добавляем ноды — исходящие суммы.
         if sum_write_off != 0:
             counter += 3
             nt.add_node(
@@ -41,6 +48,9 @@ def building_graphics(
                 label=f"Сумма: {sum_write_off}\n{description}",
                 group=3,
                 size=10,
+                x=-500,
+                y=coordinate_y,
+                physics=False,
             )
             nt.add_edge(id_key, counter)
 
@@ -64,7 +74,7 @@ if __name__ == "__main__":
     )
     config = configparser.ConfigParser()
     config.read("settings.ini", encoding="utf-8")
-    
+
     object_csv = Object_csv(
         config["CSV_table"]["analiz_object"],
         config["CSV_table"]["sum_inst"],
