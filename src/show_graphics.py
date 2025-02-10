@@ -5,7 +5,7 @@ from pyvis.network import Network
 def building_graphics(
     data: list[dict], object_csv: namedtuple, filename_out_html: str
 ) -> None:
-    height = len(data) * 50  # Высота графика, Оптимально 50px для одного Node
+    height = len(data) * 70  # Высота графика, Оптимально 70px для одного Node
     nt = Network(directed=True, height=height, filter_menu=True)
     # filter_menu - верхнее меню для фильров
 
