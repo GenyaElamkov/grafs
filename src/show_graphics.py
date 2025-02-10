@@ -5,11 +5,16 @@ from pyvis.network import Network
 def building_graphics(
     data: list[dict], object_csv: namedtuple, filename_out_html: str
 ) -> None:
-    height=1000
+    height = len(data) * 50  # Высота графика, Оптимально 50px для одного Node
     nt = Network(directed=True, height=height, filter_menu=True)
     # filter_menu - верхнее меню для фильров
-    coordinate_y = height
-    counter = 0
+
+    # Координаты для Node
+    coordinate_y: int = height
+    coordinate_one_Node = height / len(data)
+    coordinate_x = 500
+
+    id_counter = 0
     for row in data:
         try:
             sum_admission = round(float(row[object_csv.sum_inst]), 2)
@@ -26,33 +31,33 @@ def building_graphics(
 
         # Добавляем ноды — входящие суммы.
         description = f"ИНН: {row[object_csv.inn]}\nКонтрагент: {row[object_csv.agent]}"
-        coordinate_y -= height/len(data)
+        coordinate_y -= coordinate_one_Node
         if sum_admission != 0:
-            counter += 1
+            id_counter += 1
             nt.add_node(
-                counter,
+                id_counter,
                 label=f"Сумма: {sum_admission}\n{description}",
                 group=2,
                 size=10,
-                x=500,
+                x=coordinate_x,
                 y=coordinate_y,
                 physics=False,
             )
-            nt.add_edge(counter, id_key)
+            nt.add_edge(id_counter, id_key)
 
         # Добавляем ноды — исходящие суммы.
         if sum_write_off != 0:
-            counter += 3
+            id_counter += 3
             nt.add_node(
-                counter,
+                id_counter,
                 label=f"Сумма: {sum_write_off}\n{description}",
                 group=3,
                 size=10,
-                x=-500,
+                x=-coordinate_x,
                 y=coordinate_y,
                 physics=False,
             )
-            nt.add_edge(id_key, counter)
+            nt.add_edge(id_key, id_counter)
 
     nt.repulsion(node_distance=200, spring_length=250)
     nt.set_edge_smooth("dynamic")
