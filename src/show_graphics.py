@@ -5,7 +5,8 @@ from pyvis.network import Network
 def building_graphics(
     data: list[dict], object_csv: namedtuple, filename_out_html: str
 ) -> None:
-    nt = Network(directed=True, height=1000)
+    nt = Network(directed=True, height=1000, filter_menu=True)
+    # filter_menu - верхнее меню для фильров
 
     counter = 0
     for row in data:
@@ -32,7 +33,7 @@ def building_graphics(
                 size=10,
             )
             nt.add_edge(counter, id_key)
-        
+
         if sum_write_off != 0:
             counter += 3
             nt.add_node(
@@ -52,7 +53,7 @@ def building_graphics(
 
 
 if __name__ == "__main__":
-    from src.read_csv import get_data_csv
+    from read_csv import get_data_csv
 
     data = get_data_csv(filename="data.csv")
 
