@@ -12,7 +12,6 @@ def read_excel(filename_path: str, file_name_out: str) -> None:
 
 
 def get_data_csv(filename: str) -> list[dict]:
-    print(filename)
     with open(filename, "r", encoding="utf-8", newline="") as file:
         reader = csv.DictReader(file)
         return list(reader)
