@@ -2,7 +2,7 @@ from collections import namedtuple
 from pyvis.network import Network
 
 
-def format_number(num: int) -> str:
+def format_number(num: float) -> str:
     return f"{'{0:,}'.format(round(num)).replace(',', ' ')} ₽"
 
 
@@ -22,6 +22,11 @@ def format_description(agent: str, inn: str, num_text: str) -> str:
     return f"{description}\nСумма: {num_text}"
 
 
+def sorted_table_csv(data: list[dict], field_name: str, reverse=False):
+    """Сортировка данных по определенныму полю"""
+    return sorted(data, key=lambda x: float(x[field_name]), reverse=reverse)
+
+
 def building_graphics(
     data: list[dict], object_csv: namedtuple, filename_out_html: str
 ) -> None:
@@ -34,7 +39,7 @@ def building_graphics(
     coordinate_one_Node = height / len(data)
     coordinate_x = 500
 
-    id_counter = 0
+    id = 0
     for row in data:
         try:
             sum_admission = format_number(float(row[object_csv.sum_inst]))
@@ -52,9 +57,10 @@ def building_graphics(
         # Добавляем ноды — входящие суммы.
         coordinate_y -= coordinate_one_Node
         if sum_admission != 0:
-            id_counter += 1
+            id += 1
+            id_sum_admission = id
             nt.add_node(
-                id_counter,
+                id,
                 label=format_description(
                     row[object_csv.agent], row[object_csv.inn], sum_admission
                 ),
@@ -64,13 +70,12 @@ def building_graphics(
                 y=coordinate_y,
                 physics=False,
             )
-            nt.add_edge(id_counter, id_key)
 
         # Добавляем ноды — исходящие суммы.
         if sum_write_off != 0:
-            id_counter += 3
+            id += 2
             nt.add_node(
-                id_counter,
+                id,
                 label=format_description(
                     row[object_csv.agent], row[object_csv.inn], sum_write_off
                 ),
@@ -80,12 +85,17 @@ def building_graphics(
                 y=coordinate_y,
                 physics=False,
             )
-            nt.add_edge(id_key, id_counter)
+            nt.add_edges(
+                [
+                    (id_sum_admission, id_key),
+                    (id_key, id),
+                ]
+            )
 
     nt.repulsion(node_distance=200, spring_length=250)
     nt.set_edge_smooth("dynamic")
-    # nt.toggle_physics(False)
     nt.barnes_hut(overlap=1)
+
     # Показываем настройки внизу экрана.
     nt.show_buttons(filter_=["nodes", "edges"])
     nt.show(filename_out_html, notebook=False)
@@ -112,3 +122,4 @@ if __name__ == "__main__":
     )
     building_graphics(data, object_csv, filename_out_html="nx.html")
     # print(type(format_number(num=24141247.83)))
+    # print(sorted_table_csv(data, field_name=object_csv.sum_inst, reverse=True))

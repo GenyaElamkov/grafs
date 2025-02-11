@@ -23,4 +23,5 @@ def setting(filename: str) -> None:
         config["CSV_table"]["agent"],
         config["CSV_table"]["inn"],
     )
+    
     building_graphics(data, object_csv, filename_out_html="nx.html")
