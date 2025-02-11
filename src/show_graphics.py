@@ -2,6 +2,26 @@ from collections import namedtuple
 from pyvis.network import Network
 
 
+def format_number(num: int) -> str:
+    return f"{'{0:,}'.format(round(num)).replace(',', ' ')} ₽"
+
+
+def format_description(agent: str, inn: str, num_text: str) -> str:
+    """
+    Функция для форматирования описания контрагента с указанием ИНН и суммы.
+
+    Параметры:
+    agent (str): наименование контрагента.
+    inn (str): ИНН контрагента.
+    num_text (str): текстовое представление суммы, связанной с контрагентом.
+
+    Возвращает:
+    str: отформатированное описание контрагента с указанием ИНН и суммы.
+    """
+    description = f"Контрагент: {agent}\nИНН: {inn}"
+    return f"{description}\nСумма: {num_text}"
+
+
 def building_graphics(
     data: list[dict], object_csv: namedtuple, filename_out_html: str
 ) -> None:
@@ -17,12 +37,12 @@ def building_graphics(
     id_counter = 0
     for row in data:
         try:
-            sum_admission = round(float(row[object_csv.sum_inst]), 2)
+            sum_admission = format_number(float(row[object_csv.sum_inst]))
         except ValueError:
             sum_admission = 0
 
         try:
-            sum_write_off = round(float(row[object_csv.sum_out]), 2)
+            sum_write_off = format_number(float(row[object_csv.sum_out]))
         except ValueError:
             sum_write_off = 0
 
@@ -30,16 +50,17 @@ def building_graphics(
         nt.add_node(id_key, label=id_key, group=1, font={"size": 30}, size=50)
 
         # Добавляем ноды — входящие суммы.
-        description = f"ИНН: {row[object_csv.inn]}\nКонтрагент: {row[object_csv.agent]}"
         coordinate_y -= coordinate_one_Node
         if sum_admission != 0:
             id_counter += 1
             nt.add_node(
                 id_counter,
-                label=f"Сумма: {sum_admission}\n{description}",
+                label=format_description(
+                    row[object_csv.agent], row[object_csv.inn], sum_admission
+                ),
                 group=2,
                 size=10,
-                x=coordinate_x,
+                x=-coordinate_x,
                 y=coordinate_y,
                 physics=False,
             )
@@ -50,10 +71,12 @@ def building_graphics(
             id_counter += 3
             nt.add_node(
                 id_counter,
-                label=f"Сумма: {sum_write_off}\n{description}",
+                label=format_description(
+                    row[object_csv.agent], row[object_csv.inn], sum_write_off
+                ),
                 group=3,
                 size=10,
-                x=-coordinate_x,
+                x=coordinate_x,
                 y=coordinate_y,
                 physics=False,
             )
@@ -88,3 +111,4 @@ if __name__ == "__main__":
         config["CSV_table"]["inn"],
     )
     building_graphics(data, object_csv, filename_out_html="nx.html")
+    # print(type(format_number(num=24141247.83)))
