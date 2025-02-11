@@ -3,7 +3,7 @@ import configparser
 from collections import namedtuple
 
 from src.read_csv import read_excel, get_data_csv
-from src.show_graphics import building_graphics
+from src.show_graphics import building_graphics, sorted_table_csv
 
 
 def setting(filename: str) -> None:
@@ -23,5 +23,5 @@ def setting(filename: str) -> None:
         config["CSV_table"]["agent"],
         config["CSV_table"]["inn"],
     )
-    
+    data = sorted_table_csv(data, field_name=object_csv.sum_out)
     building_graphics(data, object_csv, filename_out_html="nx.html")

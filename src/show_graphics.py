@@ -22,9 +22,13 @@ def format_description(agent: str, inn: str, num_text: str) -> str:
     return f"{description}\nСумма: {num_text}"
 
 
-def sorted_table_csv(data: list[dict], field_name: str, reverse=False):
+def sorted_table_csv(data: list[dict], field_name: str, reverse=False) -> list[dict]:
     """Сортировка данных по определенныму полю"""
-    return sorted(data, key=lambda x: float(x[field_name]), reverse=reverse)
+    return sorted(
+        data,
+        key=lambda x: 0 if not x[field_name] else float(x[field_name]),
+        reverse=reverse,
+    )
 
 
 def building_graphics(
@@ -70,6 +74,7 @@ def building_graphics(
                 y=coordinate_y,
                 physics=False,
             )
+            nt.add_edge(id, id_key)
 
         # Добавляем ноды — исходящие суммы.
         if sum_write_off != 0:
@@ -85,12 +90,7 @@ def building_graphics(
                 y=coordinate_y,
                 physics=False,
             )
-            nt.add_edges(
-                [
-                    (id_sum_admission, id_key),
-                    (id_key, id),
-                ]
-            )
+            nt.add_edge(id_key, id)
 
     nt.repulsion(node_distance=200, spring_length=250)
     nt.set_edge_smooth("dynamic")
@@ -120,6 +120,6 @@ if __name__ == "__main__":
         config["CSV_table"]["agent"],
         config["CSV_table"]["inn"],
     )
+    data = sorted_table_csv(data, field_name=object_csv.sum_inst)
     building_graphics(data, object_csv, filename_out_html="nx.html")
     # print(type(format_number(num=24141247.83)))
-    # print(sorted_table_csv(data, field_name=object_csv.sum_inst, reverse=True))
